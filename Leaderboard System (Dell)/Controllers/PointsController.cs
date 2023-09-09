@@ -14,13 +14,12 @@ namespace Leaderboard_System__Dell_.Controllers
 
 		public PointsController()
 		{
-			// Create a timer and set the interval to 5 minutes
-			refreshTimer = new System.Timers.Timer(3000);
+			// Create a timer and set the interval to 5 minutes (changable)
+			refreshTimer = new System.Timers.Timer(300000);
 			refreshTimer.Elapsed += RefreshData;
-			refreshTimer.AutoReset = true; // Enable periodic triggering
-			refreshTimer.Start(); // Start the timer
+			refreshTimer.AutoReset = true; 
+			refreshTimer.Start(); 
 
-			// Load the initial data
 			cachedPoints = pointsContext.AssignLeaderboard();
 		}
 
@@ -31,10 +30,7 @@ namespace Leaderboard_System__Dell_.Controllers
 		}
 		private void RefreshData(object sender, ElapsedEventArgs e)
 		{
-			// This method will be called every 5 minutes
-			// Execute your SQL query here to refresh the data
 			List<Points> refreshedPoints = pointsContext.AssignLeaderboard();
-			// Update the cached data with the refreshed data
 			cachedPoints = refreshedPoints;
 		}
 
