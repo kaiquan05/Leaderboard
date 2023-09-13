@@ -33,7 +33,7 @@ namespace Leaderboard_System__Dell_.DAL
 
             using (MySqlCommand cmd = connection.CreateCommand())
             {
-                cmd.CommandText = @"SELECT * FROM Points ORDER BY Score DESC LIMIT 3";
+                cmd.CommandText = @"SELECT * FROM Points ORDER BY Score DESC LIMIT 10";
 
                 connection.Open();
 
@@ -60,24 +60,23 @@ namespace Leaderboard_System__Dell_.DAL
         public int CreatePoints(Points p, MySqlConnection connection)
         {
             // Create a MySqlCommand object from connection object
-            MySqlCommand cmd = conn.CreateCommand();
+            MySqlCommand cmd = connection.CreateCommand();
 
             // Specify an INSERT SQL statement
             cmd.CommandText = @"INSERT INTO Points (Name, Score) VALUES(@Name, @Score)";
-
             //Define the parameters used in the SQL statement
             cmd.Parameters.AddWithValue("@Name", p.Name);
             cmd.Parameters.AddWithValue("@Score", p.Score);
 
+            connection.Open();
             // A connection to the database must be opened before any operations are made
-            conn.Open();
 
             // Execute the INSERT SQL statement and retrieve the auto-generated ID
             cmd.ExecuteNonQuery();
             p.ID = (int)cmd.LastInsertedId;
 
             // A connection should be closed after operations
-            conn.Close();
+            connection.Close();
 
             return p.ID;
         }
