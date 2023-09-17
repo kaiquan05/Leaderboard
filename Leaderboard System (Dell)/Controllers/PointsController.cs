@@ -24,7 +24,7 @@ namespace Leaderboard_System__Dell_.Controllers
             refreshTimer.AutoReset = true;
             refreshTimer.Start();
 
-            cachedPoints = pointsContext.AssignLeaderboard(_connection);
+            cachedPoints = pointsContext.AssignLeaderboard();
         }
 
         // GET: PointsController
@@ -34,7 +34,7 @@ namespace Leaderboard_System__Dell_.Controllers
         }
         private void RefreshData(object sender, ElapsedEventArgs e)
         {
-            List<Points> refreshedPoints = pointsContext.AssignLeaderboard(_connection);
+            List<Points> refreshedPoints = pointsContext.AssignLeaderboard();
             cachedPoints = refreshedPoints;
         }
 
@@ -65,7 +65,7 @@ namespace Leaderboard_System__Dell_.Controllers
             }
 
             // Pass MySqlConnection to the DAL method
-            points.ID = pointsContext.CreatePoints(points, _connection);
+            points.ID = pointsContext.CreatePoints(points);
             return RedirectToAction("Index");
         }
 
@@ -108,6 +108,23 @@ namespace Leaderboard_System__Dell_.Controllers
             catch
             {
                 return View();
+            }
+        }
+        public JsonResult GetAllPoints()
+        {
+            return Json(pointsContext.AssignLeaderboard());
+        }
+        [HttpPost]
+        public async Task<ActionResult> InsertPoint([FromBody]Points p)
+        {
+            if (ModelState.IsValid)
+            {
+                pointsContext.CreatePoints(p);
+                return Ok();
+            }
+            else
+            {
+                return BadRequest();
             }
         }
     }
