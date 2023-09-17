@@ -27,40 +27,33 @@ namespace Leaderboard_System__Dell_.DAL
             conn = new MySqlConnection(strConn);
         }
 
-        public List<Points> AssignLeaderboard(MySqlConnection connection)
+        public List<Points> AssignLeaderboard()
         {
+            conn.Open();
             List<Points> Assign = new List<Points>();
-
-            using (MySqlCommand cmd = connection.CreateCommand())
+            MySqlCommand cmd = conn.CreateCommand();
+            cmd.CommandText = @"SELECT * FROM Points ORDER BY Score DESC LIMIT 10";
+            MySqlDataReader reader = cmd.ExecuteReader();
+            while (reader.Read())
             {
-                cmd.CommandText = @"SELECT * FROM Points ORDER BY Score DESC LIMIT 10";
-
-                connection.Open();
-
-                using (MySqlDataReader reader = cmd.ExecuteReader())
+                Assign.Add(new Points
                 {
-                    while (reader.Read())
-                    {
-                        Assign.Add(new Points
-                        {
-                            ID = reader.GetInt32(0),
-                            Name = reader.GetString(1),
-                            Score = reader.GetInt32(2)
-                        });
-                    }
-                }
-
-                connection.Close();
+                    ID = reader.GetInt32(0),
+                    Name = reader.GetString(1),
+                    Score = reader.GetInt32(2)
+                });
             }
+
+            conn.Close();
 
             return Assign;
         }
 
 
-        public int CreatePoints(Points p, MySqlConnection connection)
+        public int CreatePoints(Points p)
         {
             // Create a MySqlCommand object from connection object
-            MySqlCommand cmd = connection.CreateCommand();
+            MySqlCommand cmd = conn.CreateCommand();
 
             // Specify an INSERT SQL statement
             cmd.CommandText = @"INSERT INTO Points (Name, Score) VALUES(@Name, @Score)";
@@ -68,7 +61,7 @@ namespace Leaderboard_System__Dell_.DAL
             cmd.Parameters.AddWithValue("@Name", p.Name);
             cmd.Parameters.AddWithValue("@Score", p.Score);
 
-            connection.Open();
+            conn.Open();
             // A connection to the database must be opened before any operations are made
 
             // Execute the INSERT SQL statement and retrieve the auto-generated ID
@@ -76,7 +69,7 @@ namespace Leaderboard_System__Dell_.DAL
             p.ID = (int)cmd.LastInsertedId;
 
             // A connection should be closed after operations
-            connection.Close();
+            conn.Close();
 
             return p.ID;
         }
